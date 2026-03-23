@@ -30,7 +30,7 @@ public class ParkingLot {
                 }
             }
             if (selectedSlot != null) {
-                break; // Because we found the nearest of the PREFERRED slot type 
+                break; 
             }
         }
 
@@ -78,7 +78,7 @@ public class ParkingLot {
         allocatedSlot.setOccupied(false);
 
         long hours = Duration.between(parkingTicket.getEntryTime(), exitTime).toHours();
-        if (hours <= 0) hours = 1; // Minimum 1 hour charge
+        if (hours <= 0) hours = 1; 
         
         double rate = allocatedSlot.getType().getHourlyRate();
         double amount = hours * rate;

@@ -20,7 +20,6 @@ public class Slot {
 
     public void setOccupied(boolean occupied) { this.isOccupied = occupied; }
 
-    // Distance logic based on floor level
     public int distanceTo(int gateId) {
         return Math.abs(this.floor - gateId);
     }
