@@ -19,22 +19,17 @@ public class Board {
     private void initializeBoard(int n, String difficultyLevel) {
         Random random = new Random();
         Set<Integer> occupiedCells = new HashSet<>();
-        occupiedCells.add(targetPosition); // Do not place start/end on target
+        occupiedCells.add(targetPosition); 
 
-        // Determine max entities possible to avoid infinite loops on very small boards
-        // Start and end cells take 2 cells per entity.
-        int availableCells = targetPosition - 2; // exclude 0, 1, and target
+        int availableCells = targetPosition - 2; 
         if (availableCells < 0) availableCells = 0;
         int maxEntities = availableCells / 2;
         
         int numSnakes = Math.min(n, maxEntities / 2);
         int numLadders = Math.min(n, maxEntities / 2);
 
-        // Add Snakes (head > tail)
         for (int i = 0; i < numSnakes; ) {
-            // head from 3 to target-1
             int head = random.nextInt(targetPosition - 3) + 3;
-            // tail from 2 to head-1
             int tail = random.nextInt(head - 2) + 2;
 
             if (!occupiedCells.contains(head) && !occupiedCells.contains(tail)) {
@@ -45,11 +40,8 @@ public class Board {
             }
         }
 
-        // Add Ladders (start < end)
         for (int i = 0; i < numLadders; ) {
-            // start from 2 to target-2
             int start = random.nextInt(targetPosition - 3) + 2;
-            // end from start+1 to target-1
             int end = random.nextInt((targetPosition - 1) - start) + start + 1;
 
             if (!occupiedCells.contains(start) && !occupiedCells.contains(end)) {
