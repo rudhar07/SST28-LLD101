@@ -6,10 +6,10 @@ public class App {
     public static void main(String[] args) {
         System.out.println("=== Initializing Elevator System ===");
 
-        // Create 3 elevators with capacity 8
-        Elevator e1 = new Elevator(1, 8);
-        Elevator e2 = new Elevator(2, 8);
-        Elevator e3 = new Elevator(3, 8);
+        // Create 3 elevators with capacity 8 and weight limit 800 kg
+        Elevator e1 = new Elevator(1, 8, 800.0);
+        Elevator e2 = new Elevator(2, 8, 800.0);
+        Elevator e3 = new Elevator(3, 8, 800.0);
 
         // Building with 10 floors (0 to 9) and 3 elevators
         ElevatorController controller = new ElevatorController(
@@ -77,6 +77,33 @@ public class App {
         controller.handleExternalRequest(r6);
         // Reset load
         e1.setCurrentLoad(0);
+
+        controller.status();
+
+        // --- Scenario 6: Weight sensor overload ---
+        System.out.println("\n=== Scenario 6: Weight Sensor Overload ===");
+        e1.setCurrentLoad(0);
+        e1.getWeightSensor().setCurrentWeight(500.0);
+        System.out.println("Elevator 1 weight: " + e1.getWeightSensor());
+
+        // Add stops and process - should work fine at 500kg
+        e1.addStop(3);
+        e1.processAllStops();
+        System.out.println("Elevator 1 door: " + e1.getDoorStatus());
+
+        // Now overload it
+        e1.getWeightSensor().setCurrentWeight(850.0);
+        System.out.println("\nElevator 1 weight increased to: " + e1.getWeightSensor());
+        e1.addStop(5);
+        e1.addStop(7);
+        e1.processAllStops(); // Should stop at floor 5, door stays open
+        System.out.println("Elevator 1 door: " + e1.getDoorStatus()); // Should be OPEN
+
+        // Reduce weight and retry
+        e1.getWeightSensor().setCurrentWeight(600.0);
+        System.out.println("\nWeight reduced to: " + e1.getWeightSensor());
+        e1.processAllStops(); // Now should continue to floor 7
+        System.out.println("Elevator 1 door: " + e1.getDoorStatus()); // Should be CLOSED
 
         controller.status();
     }

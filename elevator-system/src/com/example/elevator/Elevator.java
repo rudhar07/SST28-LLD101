@@ -11,8 +11,9 @@ public class Elevator {
     private int currentLoad;
     private TreeSet<Integer> upStops;
     private TreeSet<Integer> downStops;
+    private WeightSensor weightSensor;
 
-    public Elevator(int id, int capacity) {
+    public Elevator(int id, int capacity, double weightLimit) {
         this.id = id;
         this.currentFloor = 0;
         this.direction = Direction.IDLE;
@@ -21,6 +22,7 @@ public class Elevator {
         this.currentLoad = 0;
         this.upStops = new TreeSet<>();
         this.downStops = new TreeSet<>(Collections.reverseOrder());
+        this.weightSensor = new WeightSensor(weightLimit);
     }
 
     public void addStop(int floor) {
@@ -39,7 +41,10 @@ public class Elevator {
                     upStops.remove(currentFloor);
                     openDoor();
                     System.out.println("   Elevator " + id + " stopped at Floor " + currentFloor + " (going UP)");
-                    closeDoor();
+                    if (!closeDoor()) {
+                        System.out.println("   ⚠ Elevator " + id + " OVERLOADED! Door cannot close. Please reduce weight.");
+                        return; // Cannot continue until weight is reduced
+                    }
                 }
             }
             if (upStops.isEmpty()) {
@@ -56,7 +61,10 @@ public class Elevator {
                     downStops.remove(currentFloor);
                     openDoor();
                     System.out.println("   Elevator " + id + " stopped at Floor " + currentFloor + " (going DOWN)");
-                    closeDoor();
+                    if (!closeDoor()) {
+                        System.out.println("   ⚠ Elevator " + id + " OVERLOADED! Door cannot close. Please reduce weight.");
+                        return; // Cannot continue until weight is reduced
+                    }
                 }
             }
             if (downStops.isEmpty()) {
@@ -95,8 +103,13 @@ public class Elevator {
         this.doorStatus = DoorStatus.OPEN;
     }
 
-    private void closeDoor() {
+    private boolean closeDoor() {
+        if (weightSensor.isOverloaded()) {
+            this.doorStatus = DoorStatus.OPEN; // Door stays open
+            return false;
+        }
         this.doorStatus = DoorStatus.CLOSED;
+        return true;
     }
 
     public boolean isFull() { return currentLoad >= capacity; }
@@ -106,6 +119,7 @@ public class Elevator {
     public DoorStatus getDoorStatus() { return doorStatus; }
     public int getCapacity() { return capacity; }
     public int getCurrentLoad() { return currentLoad; }
+    public WeightSensor getWeightSensor() { return weightSensor; }
 
     public void setCurrentLoad(int load) { this.currentLoad = load; }
     public void setDirection(Direction direction) { this.direction = direction; }
@@ -121,6 +135,7 @@ public class Elevator {
     public String getStatus() {
         return "Elevator " + id + " | Floor: " + currentFloor + " | Dir: " + direction
                 + " | Door: " + doorStatus + " | Load: " + currentLoad + "/" + capacity
+                + " | Weight: " + weightSensor
                 + " | Pending: " + totalPendingStops();
     }
 }
