@@ -1,10 +1,5 @@
 package com.example.ratelimiter;
 
-/**
- * Represents an incoming client API request.
- * Not every request needs an external call —
- * the business logic decides whether the external resource is required.
- */
 public class ClientRequest {
     private final String clientId;
     private final String data;

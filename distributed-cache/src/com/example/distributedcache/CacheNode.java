@@ -18,7 +18,7 @@ public class CacheNode {
 
     public String get(String key) {
         if (!store.containsKey(key)) {
-            return null; // cache miss
+            return null;
         }
         evictionPolicy.keyAccessed(key);
         return store.get(key);
@@ -26,13 +26,11 @@ public class CacheNode {
 
     public void put(String key, String value) {
         if (store.containsKey(key)) {
-            // Update existing key
             store.put(key, value);
             evictionPolicy.keyAccessed(key);
             return;
         }
 
-        // Check if we need to evict
         if (store.size() >= capacity) {
             String evictedKey = evictionPolicy.evictKey();
             if (evictedKey != null) {

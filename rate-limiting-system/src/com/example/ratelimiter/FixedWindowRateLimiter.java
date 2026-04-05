@@ -3,22 +3,8 @@ package com.example.ratelimiter;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
-/**
- * Fixed Window Counter rate limiter.
- *
- * Divides time into fixed-size windows (e.g., every 60 seconds).
- * Each key gets a counter that resets at the start of each window.
- *
- * Trade-offs:
- *   + Simple and memory-efficient (one counter per key per window)
- *   + O(1) time per check
- *   - Boundary problem: burst of requests at the end of one window
- *     and start of the next can allow 2x the limit in a short span
- */
 public class FixedWindowRateLimiter implements RateLimiter {
     private final RateLimiterConfig config;
-
-    // Maps key -> WindowCounter
     private final ConcurrentHashMap<String, WindowCounter> counters;
 
     public FixedWindowRateLimiter(RateLimiterConfig config) {
@@ -33,7 +19,6 @@ public class FixedWindowRateLimiter implements RateLimiter {
 
         WindowCounter counter = counters.get(key);
 
-        // Reset counter if we're in a new window
         if (counter == null || counter.windowStart != windowStart) {
             counter = new WindowCounter(windowStart);
             counters.put(key, counter);
@@ -44,12 +29,9 @@ public class FixedWindowRateLimiter implements RateLimiter {
             return true;
         }
 
-        return false; // rate limit exceeded
+        return false;
     }
 
-    /**
-     * Tracks count within a single time window.
-     */
     private static class WindowCounter {
         final long windowStart;
         final AtomicInteger count;

@@ -1,9 +1,5 @@
 package com.example.ratelimiter;
 
-/**
- * Configuration for rate limiting.
- * Defines the maximum number of requests allowed within a time window.
- */
 public class RateLimiterConfig {
     private final int maxRequests;
     private final long windowSizeMillis;

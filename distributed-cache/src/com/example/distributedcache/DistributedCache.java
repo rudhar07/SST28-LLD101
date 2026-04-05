@@ -16,7 +16,6 @@ public class DistributedCache {
         this.nodes = new ArrayList<>();
 
         for (int i = 0; i < numberOfNodes; i++) {
-            // Each node gets its own eviction policy instance
             EvictionPolicy<String> policy = new LRUEvictionPolicy<>();
             nodes.add(new CacheNode(i, capacityPerNode, policy));
         }
@@ -31,12 +30,11 @@ public class DistributedCache {
 
         String value = node.get(key);
         if (value != null) {
-            // Cache hit
             System.out.println("-> GET \"" + key + "\" = \"" + value + "\" [CACHE HIT from Node " + nodeIndex + "]");
             return value;
         }
 
-        // Cache miss — fetch from database
+        // cache miss - fetch from database
         value = database.get(key);
         if (value != null) {
             node.put(key, value);
